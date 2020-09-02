@@ -1,2 +1,2 @@
 # Scratch
-Sandbox for miscellaneous projects
+Sandbox for miscellaneous personal projects
