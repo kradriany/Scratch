@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mario Kart 8 Deluxe Setup Optimizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { ChevronUp, ChevronDown, Trophy, Star } = LucideReact;
+
+    const MarioKartOptimizer = () => {
+      // Sample Mario Kart 8 data - simplified for demo
+      const characters = [
+        { name: "Mario", speed: 3.25, acceleration: 3.25, weight: 3.5, handling: 3.25, traction: 3.75 },
+        { name: "Luigi", speed: 3.25, acceleration: 3.25, weight: 3.5, handling: 3.25, traction: 3.75 },
+        { name: "Peach", speed: 2.75, acceleration: 4.25, weight: 2.25, handling: 4.5, traction: 3.75 },
+        { name: "Bowser", speed: 4.75, acceleration: 2.25, weight: 4.75, handling: 2.75, traction: 3.25 },
+        { name: "Yoshi", speed: 3.5, acceleration: 3.75, weight: 3.0, handling: 4.0, traction: 4.25 },
+        { name: "Toad", speed: 2.25, acceleration: 4.75, weight: 2.0, handling: 4.75, traction: 4.0 },
+        { name: "Koopa", speed: 2.25, acceleration: 4.75, weight: 2.0, handling: 4.75, traction: 4.0 },
+        { name: "Shy Guy", speed: 2.25, acceleration: 4.75, weight: 2.0, handling: 4.75, traction: 4.0 },
+        { name: "Wario", speed: 4.75, acceleration: 2.25, weight: 4.75, handling: 2.75, traction: 3.25 },
+        { name: "Waluigi", speed: 4.25, acceleration: 2.75, weight: 4.25, handling: 3.25, traction: 3.5 }
+      ];
+
+      const vehicles = [
+        { name: "Standard Kart", speed: 0, acceleration: 0, weight: 0, handling: 0, traction: 0 },
+        { name: "Pipe Frame", speed: 0.25, acceleration: -0.75, weight: -0.25, handling: 0.5, traction: -0.25 },
+        { name: "Mach 8", speed: 0.5, acceleration: -0.5, weight: 0, handling: -0.25, traction: 0.25 },
+        { name: "Steel Driver", speed: 0, acceleration: -0.25, weight: 0.5, handling: -0.75, traction: 0.5 },
+        { name: "Cat Cruiser", speed: -0.25, acceleration: 0.75, weight: -0.5, handling: 0.25, traction: 0.25 },
+        { name: "Circuit Special", speed: 1.0, acceleration: -1.25, weight: 0.25, handling: -0.75, traction: -0.5 },
+        { name: "Tri-Speeder", speed: 0.5, acceleration: -0.25, weight: 0.25, handling: -0.5, traction: 0 },
+        { name: "Badwagon", speed: 0.5, acceleration: -1.0, weight: 0.75, handling: -0.25, traction: 0 },
+        { name: "Prancer", speed: -0.25, acceleration: 0.5, weight: -0.75, handling: 0.75, traction: 0.25 },
+        { name: "Biddybuggy", speed: -1.0, acceleration: 1.25, weight: -1.0, handling: 1.25, traction: 0.5 }
+      ];
+
+      const tires = [
+        { name: "Standard", speed: 0, acceleration: 0, weight: 0, handling: 0, traction: 0 },
+        { name: "Monster", speed: 0.5, acceleration: -0.75, weight: 0.25, handling: -1.25, traction: 1.5 },
+        { name: "Roller", speed: -0.5, acceleration: 1.0, weight: -0.5, handling: 1.0, traction: -0.5 },
+        { name: "Slim", speed: 0.5, acceleration: -0.25, weight: 0, handling: 0.5, traction: -1.0 },
+        { name: "Slick", speed: 1.0, acceleration: -1.0, weight: 0.25, handling: -0.5, traction: -1.25 },
+        { name: "Metal", speed: 0.25, acceleration: -0.25, weight: 0.75, handling: -0.75, traction: 0.5 },
+        { name: "Button", speed: -0.75, acceleration: 1.25, weight: -0.75, handling: 1.25, traction: 0 },
+        { name: "Off-Road", speed: -0.25, acceleration: 0.5, weight: 0, handling: 0.25, traction: 1.25 },
+        { name: "Sponge", speed: -0.5, acceleration: 0.75, weight: -0.25, handling: 0.75, traction: 0.25 }
+      ];
+
+      const [preferences, setPreferences] = React.useState({
+        speed: 3,
+        acceleration: 3,
+        weight: 3,
+        handling: 3,
+        traction: 3
+      });
+
+      const [priorities, setPriorities] = React.useState(['speed', 'acceleration', 'handling', 'weight', 'traction']);
+      const [results, setResults] = React.useState([]);
+
+      const statNames = {
+        speed: 'Speed',
+        acceleration: 'Acceleration', 
+        weight: 'Weight',
+        handling: 'Handling',
+        traction: 'Traction'
+      };
+
+      const calculateCombinations = () => {
+        const combinations = [];
+        
+        characters.forEach(char => {
+          vehicles.forEach(vehicle => {
+            tires.forEach(tire => {
+              const totalStats = {
+                speed: Math.max(0, Math.min(6, char.speed + vehicle.speed + tire.speed)),
+                acceleration: Math.max(0, Math.min(6, char.acceleration + vehicle.acceleration + tire.acceleration)),
+                weight: Math.max(0, Math.min(6, char.weight + vehicle.weight + tire.weight)),
+                handling: Math.max(0, Math.min(6, char.handling + vehicle.handling + tire.handling)),
+                traction: Math.max(0, Math.min(6, char.traction + vehicle.traction + tire.traction))
+              };
+
+              // Calculate score based on preferences and priorities
+              let score = 0;
+              priorities.forEach((stat, index) => {
+                const priorityWeight = (5 - index) / 15; // Higher weight for higher priority
+                const preference = preferences[stat];
+                const actual = totalStats[stat];
+                
+                // Score based on how close actual is to preference
+                const distance = Math.abs(actual - preference);
+                const statScore = Math.max(0, 6 - distance) * priorityWeight;
+                score += statScore;
+              });
+
+              combinations.push({
+                character: char.name,
+                vehicle: vehicle.name,
+                tire: tire.name,
+                stats: totalStats,
+                score: score
+              });
+            });
+          });
+        });
+
+        // Sort by score and return top 10
+        combinations.sort((a, b) => b.score - a.score);
+        setResults(combinations.slice(0, 10));
+      };
+
+      React.useEffect(() => {
+        calculateCombinations();
+      }, [preferences, priorities]);
+
+      const movePriority = (stat, direction) => {
+        const currentIndex = priorities.indexOf(stat);
+        const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        
+        if (newIndex >= 0 && newIndex < priorities.length) {
+          const newPriorities = [...priorities];
+          [newPriorities[currentIndex], newPriorities[newIndex]] = [newPriorities[newIndex], newPriorities[currentIndex]];
+          setPriorities(newPriorities);
+        }
+      };
+
+      const StatBar = ({ value, max = 6 }) => {
+        const percentage = (value / max) * 100;
+        return (
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${percentage}%` }}
+            ></div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-red-500 to-blue-600 min-h-screen">
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+              🏁 Mario Kart 8 Deluxe Setup Optimizer
+            </h1>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Preferences Panel */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-800">Your Preferences</h2>
+                
+                {/* Stat Sliders */}
+                <div className="space-y-4">
+                  {Object.keys(preferences).map(stat => (
+                    <div key={stat} className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {statNames[stat]}: {preferences[stat].toFixed(1)}
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="6"
+                        step="0.5"
+                        value={preferences[stat]}
+                        onChange={(e) => setPreferences(prev => ({
+                          ...prev,
+                          [stat]: parseFloat(e.target.value)
+                        }))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Priority Ranking */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Priority Ranking</h3>
+                  <div className="space-y-2">
+                    {priorities.map((stat, index) => (
+                      <div key={stat} className="flex items-center justify-between bg-gray-50 p-3 rounded">
+                        <span className="flex items-center">
+                          <span className="text-lg font-bold text-blue-600 mr-3">#{index + 1}</span>
+                          {statNames[stat]}
+                        </span>
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => movePriority(stat, 'up')}
+                            disabled={index === 0}
+                            className="p-1 text-gray-600 hover:text-blue-600 disabled:opacity-30"
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            onClick={() => movePriority(stat, 'down')}
+                            disabled={index === priorities.length - 1}
+                            className="p-1 text-gray-600 hover:text-blue-600 disabled:opacity-30"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Results Panel */}
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Top Recommendations</h2>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {results.slice(0, 5).map((result, index) => (
+                    <div key={index} className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          {index === 0 && <Trophy className="text-yellow-500" size={20} />}
+                          {index <= 2 && index > 0 && <Star className="text-yellow-500" size={16} />}
+                          <span className="font-bold text-lg">#{index + 1}</span>
+                        </div>
+                        <span className="text-sm text-gray-600">Score: {result.score.toFixed(2)}</span>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
+                        <div><strong>Character:</strong> {result.character}</div>
+                        <div><strong>Vehicle:</strong> {result.vehicle}</div>
+                        <div><strong>Tires:</strong> {result.tire}</div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        {Object.entries(result.stats).map(([stat, value]) => (
+                          <div key={stat} className="flex items-center space-x-3">
+                            <span className="text-xs font-medium w-20">{statNames[stat]}:</span>
+                            <StatBar value={value} />
+                            <span className="text-xs w-8">{value.toFixed(1)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<MarioKartOptimizer />);
+  </script>
+</body>
+</html>
