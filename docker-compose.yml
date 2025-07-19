@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  api-emulator:
+    build: ./api-emulator
+    container_name: api-emulator
+
+  agent-service:
+    build: ./agent-service
+    container_name: agent-service
+    depends_on:
+      - api-emulator
+
+  kong-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+    volumes:
+      - kong-data:/var/lib/postgresql/data
+
+  kong:
+    image: kong:3.3
+    depends_on:
+      - kong-db
+      - api-emulator
+      - agent-service
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - '8000:8000'
+      - '8443:8443'
+      - '8001:8001'
+
+  zeek:
+    build: ./zeek
+    network_mode: service:kong
+    command: zeek -i eth0 local
+
+volumes:
+  kong-data:

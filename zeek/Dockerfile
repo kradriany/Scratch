@@ -1,0 +1,1 @@
+FROM fetzerch/zeek:latest

@@ -1,0 +1,5 @@
+# example for inclusion in root docker-compose.yml:
+zeek:
+  build: ./zeek
+  network_mode: service:kong
+  command: zeek -i eth0 local
