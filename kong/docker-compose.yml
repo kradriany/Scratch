@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  kong-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+    volumes:
+      - kong-data:/var/lib/postgresql/data
+
+  kong:
+    image: kong:3.3
+    depends_on:
+      - kong-db
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - '8000:8000'
+      - '8443:8443'
+      - '8001:8001'
+
+volumes:
+  kong-data:
+
+To register routes (after docker-compose up -d):
+
+curl -i -X POST http://localhost:8001/services \
+  --data name=device-api --data url='http://api-emulator:3000'
+curl -i -X POST http://localhost:8001/services/device-api/routes \
+  --data 'paths[]=/api'
+
+curl -i -X POST http://localhost:8001/services \
+  --data name=agent --data url='http://agent-service:3000'
+curl -i -X POST http://localhost:8001/services/agent/routes \
+  --data 'paths[]=/agent'
